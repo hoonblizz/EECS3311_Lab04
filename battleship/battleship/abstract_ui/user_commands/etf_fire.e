@@ -17,7 +17,7 @@ feature -- command
 			fire_precond(coordinate)
     	do
 			-- perform some update on the model state
-			--print("This is Fire...")
+			print("%N[FIRE] Fire..." + coordinate.row.out + ", " + coordinate.column.out)
 			model.default_update
 			etf_cmd_container.on_change.notify ([Current])
     	end

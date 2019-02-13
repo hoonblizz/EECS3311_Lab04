@@ -20,12 +20,14 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
-			create s.make_empty
+			--create s.make_empty
 			i := 0
+			create battle.make
 		end
 
 feature -- model attributes
-	s : STRING
+	--s : STRING
+	battle : BATTLE
 	i : INTEGER
 
 feature -- model operations
@@ -44,10 +46,10 @@ feature -- model operations
 feature -- queries
 	out : STRING
 		do
-			create Result.make_from_string ("  ")
-			Result.append ("State " + i.out + " OK ->" )
-			--Result.append("New game? " +  )
-			Result.append ("   1  2  3  4")
+			--create Result.make_from_string ("  ")
+			--Result.append ("State " + i.out + " OK" )
+
+			Result := battle.display_game_board(i)
 
 		end
 

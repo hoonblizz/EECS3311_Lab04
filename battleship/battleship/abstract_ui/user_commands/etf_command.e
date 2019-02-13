@@ -18,7 +18,7 @@ feature {NONE}
 		local
 		  model_access: ETF_MODEL_ACCESS
 		do
-			print("%N[ETF_COMMAND] make " + an_etf_cmd_name.out)
+			--print("%N[ETF_COMMAND] make " + an_etf_cmd_name.out)
 			Precursor(an_etf_cmd_name, etf_cmd_args, an_etf_cmd_container)
 			-- may set your own model state here ...
 
