@@ -1,55 +1,55 @@
 class
  	 ETF_TYPE_CONSTRAINTS
 
-feature -- type queries 
+feature -- type queries
 
-	is_column(etf_v: INTEGER_64): BOOLEAN 
+	is_column(etf_v: INTEGER_64): BOOLEAN
 		require
 			comment("etf_v: COLUMN = 1 .. 12")
 		do
-			 Result := 
+			 Result :=
 				(1 <= etf_v) and then (etf_v <= 12)
 		ensure
-			 Result = 
+			 Result =
 				(1 <= etf_v) and then (etf_v <= 12)
 		end
 
-	is_row(etf_v: INTEGER_64): BOOLEAN 
+	is_row(etf_v: INTEGER_64): BOOLEAN
 		require
 			comment("etf_v: ROW = {A, B, C, D, E, F, G, H, I, J, K, L}")
 		do
-			 Result := 
+			 Result :=
 				(( etf_v ~ A ) or else ( etf_v ~ B ) or else ( etf_v ~ C ) or else ( etf_v ~ D ) or else ( etf_v ~ E ) or else ( etf_v ~ F ) or else ( etf_v ~ G ) or else ( etf_v ~ H ) or else ( etf_v ~ I ) or else ( etf_v ~ J ) or else ( etf_v ~ K ) or else ( etf_v ~ L ))
 		ensure
-			 Result = 
+			 Result =
 				(( etf_v ~ A ) or else ( etf_v ~ B ) or else ( etf_v ~ C ) or else ( etf_v ~ D ) or else ( etf_v ~ E ) or else ( etf_v ~ F ) or else ( etf_v ~ G ) or else ( etf_v ~ H ) or else ( etf_v ~ I ) or else ( etf_v ~ J ) or else ( etf_v ~ K ) or else ( etf_v ~ L ))
 		end
 
-	is_coordinate(etf_v: TUPLE[row: INTEGER_64; column: INTEGER_64]): BOOLEAN 
+	is_coordinate(etf_v: TUPLE[row: INTEGER_64; column: INTEGER_64]): BOOLEAN
 		require
 			comment("etf_v: COORDINATE = TUPLE[row: ROW = {A, B, C, D, E, F, G, H, I, J, K, L}; column: COLUMN = 1 .. 12]")
 		do
-			 Result := 
+			 Result :=
 				         is_row(etf_v.row)
 				and then is_column(etf_v.column)
 		ensure
-			 Result = 
+			 Result =
 				         is_row(etf_v.row)
 				and then is_column(etf_v.column)
 		end
 
-	is_level(etf_v: INTEGER_64): BOOLEAN 
+	is_level(etf_v: INTEGER_64): BOOLEAN
 		require
 			comment("etf_v: LEVEL = {easy, medium, hard, advanced}")
 		do
-			 Result := 
+			 Result :=
 				(( etf_v ~ easy ) or else ( etf_v ~ medium ) or else ( etf_v ~ hard ) or else ( etf_v ~ advanced ))
 		ensure
-			 Result = 
+			 Result =
 				(( etf_v ~ easy ) or else ( etf_v ~ medium ) or else ( etf_v ~ hard ) or else ( etf_v ~ advanced ))
 		end
 
-feature -- constants for enumerated items 
+feature -- constants for enumerated items
 	A: INTEGER =1
 	B: INTEGER =2
 	C: INTEGER =3

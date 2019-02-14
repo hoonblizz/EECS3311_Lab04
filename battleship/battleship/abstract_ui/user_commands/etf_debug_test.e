@@ -17,7 +17,8 @@ feature -- command
 			debug_test_precond(level)
     	do
 			-- perform some update on the model state
-		
+
+			model.battle.debug_test (level)
 			model.default_update
 			etf_cmd_container.on_change.notify ([Current])
     	end

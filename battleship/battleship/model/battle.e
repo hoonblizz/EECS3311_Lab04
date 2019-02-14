@@ -29,17 +29,18 @@ feature {NONE} -- Initialization
 			current_bomb_limit := easy_bomb_limit
 			current_score_limit := easy_score_limit
 			current_ships_limit := easy_ships_limit
+			row_chars := <<'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L'>>
 
 			cmd_status_msg := "OK"
 			game_msg := "Start a new game"
 
 			create gen_ship.make_empty
+			generated_ships := gen_ship.generate_ships (debug_mode, current_board_size, current_ships_limit)
+
 		end
 
 	-- Reset variables for new_game and debug_test
 	reset(debugMode: BOOLEAN; level: INTEGER_64)
-		local
-			generated_ships: ARRAYED_LIST[TUPLE[size: INTEGER; row: INTEGER; col: INTEGER; dir: BOOLEAN]]
 		do
 			-- reset all variables
 			new_game_started := true
@@ -92,16 +93,18 @@ feature {NONE} -- Initialization
 				print("%NShip Size: " + ship.item.size.out + ", Pos: [" + ship.item.row.out + ", " + ship.item.col.out + "], Dir: " + ship.item.dir.out)
 			end
 
-			-- If Debug mode, need to mark ship location
+
 
 
 		end
 
 feature {NONE} -- Attributes
 	gen_ship: GEN_SHIP		-- use to generate ships in random
+	generated_ships: ARRAYED_LIST[TUPLE[size: INTEGER; row: INTEGER; col: INTEGER; dir: BOOLEAN]]
 	debug_mode: BOOLEAN
 	current_difficulty: INTEGER_64	-- 13, 14, 15, 16 (easy, medium, hard, advanced)
 	board: ARRAY[CHARACTER]
+
 	current_board_size: INTEGER
 	current_game: INTEGER		-- indicates number of games currently running
 	current_fire, current_bomb, current_score, current_ships: INTEGER
@@ -133,7 +136,7 @@ feature {NONE} -- Attributes
 	advanced_score_limit : INTEGER = 28
 	advanced_ships_limit : INTEGER = 7
 
-
+	row_chars: ARRAY[CHARACTER]
 
 feature {ETF_COMMAND}
 	-- in the middle of game, new_game command doesn't work
@@ -146,6 +149,86 @@ feature {ETF_COMMAND}
 	game_msg: STRING
 
 feature
+	-- board display.
+	display_board: STRING
+		local
+			i,j,board_index: INTEGER
+		do
+			create Result.make_empty
+			print("%NEASY mode display")
+
+			from i := 0 until i > current_board_size
+			loop
+				--print("%NBoard display process: i is " + i.out + " ----------")
+				if i ~ 0 then		-- Very first col line (numbering on board)
+					Result.append("  ")
+					from j := 0 until j > current_board_size
+					loop
+						--print("%NBoard display process: j is " + j.out)
+						if j ~ 0	 then
+							Result.append(" ")
+						else
+							Result.append(j.out) -- display numbers
+						end
+						Result.append("  ") -- give space between col
+						j := j + 1
+					end
+				else					-- rest of board
+					Result.append("  ")
+					from j := 0 until j > current_board_size
+					loop
+						--print("%NBoard display process: j is " + j.out)
+						if j ~ 0	 then
+							Result.append(row_chars[i].out) -- display alphabet
+						else
+							--calculate board index
+							board_index := (current_board_size * (i - 1)) + j
+							Result.append(board[board_index].out)
+						end
+						Result.append("  ")
+						j := j + 1
+					end
+				end
+
+				Result.append ("%N") -- next line
+				i := i + 1
+
+			end
+
+		end
+
+	-- only for debug_test mode
+	-- dir is true => Vertical
+	display_ships_on_board
+		local
+			board_index: INTEGER
+			i: INTEGER
+		do
+			across
+				generated_ships as ship
+			loop
+				-- board position = board limit * row + col
+
+				from i := 1 until i > ship.item.size
+				loop
+					print("%NDisplaying ship -> Size: " + ship.item.size.out + ", Pos: [" + ship.item.row.out + ", " + ship.item.col.out + "], Dir: " + ship.item.dir.out)
+
+					if ship.item.dir then
+						board_index := (current_board_size * (ship.item.row - 0)) + (ship.item.col + ((i - 1) * current_board_size))
+						print("%NBoard index is " + board_index.out)
+						board.put ('v', board_index)	-- v MUST be in single quote.
+					else
+						board_index := (current_board_size * (ship.item.row - 1)) + (ship.item.col + (i - 0))
+						print("%NBoard index is " + board_index.out)
+						board.put ('h', board_index)
+					end
+
+					i := i + 1
+
+				end
+
+			end
+		end
 	display_game_board(stateNum: INTEGER): STRING
 		local
 			--fire_limit, bomb_limit, score_limit, ships_limit: INTEGER
@@ -157,32 +240,7 @@ feature
 				Result.append ("  " + "state " + stateNum.out + " " + cmd_status_msg + " => " + game_msg + "%N")
 
 				-- Board size is different from difficulties
-				if current_difficulty ~ 13 then
-
-					print("%N EASY mode display")
-					Result.append ("  " + " " + "  "+ "1" + "  " + "2" + "  " + "3" + "  " + "4" + "%N")
-					Result.append ("  " + "A" + "  "+ board[1].out + "  " + board[2].out + "  " + board[3].out + "  " + board[4].out + "%N")
-					Result.append ("  " + "B" + "  "+ board[5].out + "  " + board[6].out + "  " + board[7].out + "  " + board[8].out + "%N")
-					Result.append ("  " + "C" + "  "+ board[9].out + "  " + board[10].out + "  " + board[11].out + "  " + board[12].out + "%N")
-					Result.append ("  " + "D" + "  "+ board[13].out + "  " + board[14].out + "  " + board[15].out + "  " + board[16].out + "%N")
-
-				elseif current_difficulty ~ 14 then
-
-					print("%N MEDIUM mode display")
-
-
-				elseif current_difficulty ~ 15 then
-
-					print("%N HARD mode display")
-
-
-				elseif current_difficulty ~ 16 then
-
-					print("%N ADVANCED mode display")
-
-				else
-					print("%N ELSE? mode display")
-				end
+				Result.append(Current.display_board)
 
 				-- Rest of status display
 				Result.append ("  " + "Current Game: " + current_game.out + "%N")
@@ -231,8 +289,11 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 				game_msg := "Keep Firing!"
 			else
 				reset(true, level)
+				-- If Debug mode, need to mark ship location
+				display_ships_on_board
 			end
 		end
+
 	-- new_game
 	-- check if game has ended
 	new_game(level: INTEGER_64)
