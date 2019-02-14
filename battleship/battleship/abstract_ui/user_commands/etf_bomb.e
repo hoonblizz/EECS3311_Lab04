@@ -17,7 +17,7 @@ feature -- command
 			bomb_precond(coordinate1, coordinate2)
     	do
 			-- perform some update on the model state
-			print("This is Bomb...")
+			model.battle.bomb(coordinate1, coordinate2)
 			model.default_update
 			etf_cmd_container.on_change.notify ([Current])
     	end

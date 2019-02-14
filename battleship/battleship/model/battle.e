@@ -14,6 +14,7 @@ feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		do
+			game_finished := false
 			new_game_started := false
 			debug_mode := false
 			current_difficulty := 0		-- not set. so it displays nothing
@@ -46,6 +47,7 @@ feature {NONE} -- Initialization
 	reset(debugMode: BOOLEAN; level: INTEGER_64)
 		do
 			-- reset all variables
+			game_finished := false
 			new_game_started := true
 			debug_mode := debugMode
 			current_difficulty := level
@@ -147,9 +149,7 @@ feature {NONE} -- Attributes
 feature {ETF_COMMAND}
 	-- in the middle of game, new_game command doesn't work
 	game_finished: BOOLEAN
-		do
 
-		end
 	new_game_started: BOOLEAN		-- if new_game not started but command entered, error message display
 	cmd_status_msg: STRING
 	game_msg: STRING
@@ -248,6 +248,20 @@ feature {NONE} -- Utility
 			end
 
 			Result := (x_num ~ ship_size) -- x mark number is matching with ship size?
+		end
+	check_no_shots_fired: BOOLEAN
+	-- for messages to display
+		do
+			Result := (current_fire + current_bomb) ~ 0
+		end
+	check_bombs_adjacent(coord1: TUPLE[row: INTEGER_64; col: INTEGER_64]; coord2: TUPLE[row: INTEGER_64; col: INTEGER_64]): BOOLEAN
+	-- row is the same and col difference is 1
+	-- col is the same and row difference is 1
+	-- AND coord1 and coord2 should not be the same. (Obvious)
+		do
+			Result := (((coord1.row ~ coord2.row) and ((coord1.col - coord2.col = 1) or (coord2.col - coord1.col = 1))) or
+					((coord1.col ~ coord2.col) and ((coord1.row - coord2.row = 1) or (coord2.row - coord1.row = 1)))) and
+					not (coord1.row ~ coord2.row and coord1.col ~ coord2.col)
 		end
 
 
@@ -374,17 +388,19 @@ feature
 		do
 			create Result.make_empty
 
-			if current_difficulty >= 13 then
+			if stateNum ~ 0 then -- at initial setting, difficulty is set to 0
 
-				Result.append (Current.display_command_status(stateNum))
-				Result.append(Current.display_board_status) -- Board size is different from difficulties
-				Result.append (Current.display_game_status)
-
-			else -- at initial setting, difficulty is set to 0
-				-- No command is entered (at the very beginning)
 				cmd_status_msg := "OK"
 				game_msg := "Start a new game"
 				Result.append (Current.display_command_status(stateNum))
+
+			else
+				Result.append (Current.display_command_status(stateNum))
+				-- Display board and game status only if new game  (or debug) is started.
+				if new_game_started or game_finished then
+					Result.append(Current.display_board_status) -- Board size is different from difficulties
+					Result.append (Current.display_game_status)
+				end
 
 			end
 
@@ -471,13 +487,39 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 
 		end
 
+	-- Check if index is matching with ship location with given index
+	-- returns ship size
+	check_if_hit(arg_index: INTEGER): INTEGER
+		local
+			match_found: BOOLEAN
+			matched_ship_size: INTEGER
+		do
+			match_found := false
+			across generated_ships_index as ships
+			loop
+				across ships.item.pos as index
+				loop
+					if index.item ~ arg_index then	-- if match is found,
+						match_found := true
+						matched_ship_size := ships.item.size
+					end
+				end
+			end
+
+			if match_found then
+				Result := matched_ship_size
+			else
+				Result := 0
+			end
+
+		end
+
 	-- fire
 	-- We have row and colums as integers. We can calculate where to mark on 'board'
 	-- based on this. mode board limit * row + col
 	fire(row: INTEGER_64; col: INTEGER_64)
 		local
 			fire_index: INTEGER
-			match_found: BOOLEAN
 			matched_ship_size: INTEGER
 			caused_sink: BOOLEAN
 		do
@@ -486,32 +528,33 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			print("%NFire to pos: " + row.out + ", " + col.out + " => index: " + fire_index.out)
 
 			-- Check for 'Already fired'
+			-- Check for 'Game not started'
+			-- Check for 'No shots remaining'
+			-- check for 'Invalid coordinate'
 			if not (board[fire_index] ~ '_' or board[fire_index] ~ 'v' or board[fire_index] ~ 'h') then
 				cmd_status_msg := "Already fired there"
-				game_msg := "Keep Firing!"
+				--game_msg := "Keep Firing!"
+			elseif not new_game_started then
+				cmd_status_msg := "Game not started"
+				game_msg := "Start a new game"
+			elseif current_fire >= current_fire_limit then
+				cmd_status_msg := "No shots remaining"
+				--game_msg := "Keep Firing!"
+			elseif (row > current_board_size or col > current_board_size) then
+				cmd_status_msg := "Invalid coordinate"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			else
 
 				cmd_status_msg := "OK"
 
 				-- Check if that position is a matching position
-				match_found := false
-				across generated_ships_index as ships
-				loop
-
-					across ships.item.pos as index
-					loop
-						if index.item ~ fire_index then	-- if match is found,
-							--print("%NFire Index match Found: " + index.item.out)
-							match_found := true
-							matched_ship_size := ships.item.size
-						end
-					end
-				end
+				-- Returns ship size if hit. Otherwise, return 0
+				matched_ship_size := check_if_hit(fire_index)
 
 				-- Cases need to be consider:
 				-- 	fire hit. But All ammos ran out and ship not sunk -> player loses
 				--	fire not hit and All ammos ran out -> player loses
-				if match_found then -- fire hits a ship.
+				if matched_ship_size > 0 then -- fire hits a ship.
 
 					-- Mark on board (Important because it's used for checking sink or not and scoring)
 					board.put ('X', fire_index.as_integer_32)
@@ -540,9 +583,11 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 				if player_wins then
 					game_msg := game_msg + " You Win!"
 					new_game_started := false
+					game_finished := true
 				elseif player_loses then
 					game_msg := game_msg + " Game Over!"
 					new_game_started := false
+					game_finished := true
 				else
 					game_msg := game_msg + " Keep Firing!"
 				end
@@ -552,6 +597,159 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 
 			end
 
+
+		end
+
+	bomb(coord1: TUPLE[row: INTEGER_64; col: INTEGER_64] ; coord2: TUPLE[row: INTEGER_64; col: INTEGER_64])
+		local
+			bomb_1_index, bomb_2_index: INTEGER
+			bomb1_hit_shipSize, bomb2_hit_shipSize: INTEGER
+			bomb1_caused_sink, bomb2_caused_sink: BOOLEAN
+		do
+
+			bomb_1_index := convert_coord_to_index(coord1.row.as_integer_32, coord1.col.as_integer_32, current_board_size)
+			bomb_2_index := convert_coord_to_index(coord2.row.as_integer_32, coord2.col.as_integer_32, current_board_size)
+
+			print("%NBombs index: " + bomb_1_index.out + ", " + bomb_2_index.out)
+
+			-- Check for 'Already fired'
+			-- Check for 'Game not started'
+			-- Check for 'No shots remaining'
+			-- check for 'Invalid coordinate'
+			-- Check for 'Bomb coordinates must be adjacent'
+			-- Cases for hit:
+			--	both bombs hit on a same ship -> sink, not sink
+			--		display sinked ship like, "2x1 ship sunk! Keep Firing!"
+			--		both hit but not sinked, "Hit! Keep Firing!"
+			--	each bombs hit different ships -> sink, not sink
+			--		missed or hit, if sink show like "2x1 ship sunk! Keep Firing!"
+			--		if both sink different ships, "2x1 and 3x1 ships sunk! Keep Firing!"
+			--	one hits a ship, other missed, "Hit! Keep Firing!"
+			--	both midded
+			--		"Miss! Keep Firing!"
+			if
+				not ((board[bomb_1_index] ~ '_' or board[bomb_1_index] ~ 'v' or board[bomb_1_index] ~ 'h') and
+					(board[bomb_2_index] ~ '_' or board[bomb_2_index] ~ 'v' or board[bomb_2_index] ~ 'h'))
+			then
+				cmd_status_msg := "Already fired there"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
+			elseif not new_game_started then
+				cmd_status_msg := "Game not started"
+				game_msg := "Start a new game"
+			elseif current_bomb >= current_bomb_limit then
+				cmd_status_msg := "No bombs remaining"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
+			elseif
+				((coord1.row > current_board_size or coord1.col > current_board_size) or
+				(coord2.row > current_board_size or coord2.col > current_board_size))
+			then
+				cmd_status_msg := "Invalid coordinate"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
+			elseif not check_bombs_adjacent(coord1, coord2) then
+				cmd_status_msg := "Bomb coordinates must be adjacent"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
+			else
+				--print("%NBOMB!!!!")
+				cmd_status_msg := "OK"
+
+				bomb1_hit_shipSize := check_if_hit(bomb_1_index)
+				bomb2_hit_shipSize := check_if_hit(bomb_2_index)
+
+				-- Both made hits on the same ship
+				if (bomb1_hit_shipSize ~ bomb2_hit_shipSize and bomb1_hit_shipSize > 0 and bomb2_hit_shipSize > 0) then
+					board.put ('X', bomb_1_index.as_integer_32)
+					board.put ('X', bomb_2_index.as_integer_32)
+
+					bomb1_caused_sink := check_fire_caused_sink(bomb1_hit_shipSize)
+					if bomb1_caused_sink then
+
+						game_msg := bomb1_hit_shipSize.out + "x1 ship sunk!"
+
+						-- Variable change for hit
+						-- For size > 1 Ships, it must be sunk in order to get score
+						current_score := current_score + bomb1_hit_shipSize
+						total_score_current := total_score_current + bomb1_hit_shipSize
+						current_ships := current_ships + 1
+
+					else
+						game_msg := "Hit!"
+					end
+
+				else
+				-- Both Bombs hit 'different' ships
+
+					if bomb1_hit_shipSize > 0 then	-- coord1 is a hit
+						board.put ('X', bomb_1_index.as_integer_32)
+
+						bomb1_caused_sink := check_fire_caused_sink(bomb1_hit_shipSize)
+						if bomb1_caused_sink then
+
+							-- Variable change for hit
+							-- For size > 1 Ships, it must be sunk in order to get score
+							current_score := current_score + bomb1_hit_shipSize
+							total_score_current := total_score_current + bomb1_hit_shipSize
+							current_ships := current_ships + 1
+
+						end
+
+					else								-- coord1 is not a hit
+						board.put ('O', bomb_1_index.as_integer_32)
+					end
+
+					if bomb2_hit_shipSize > 0 then	-- coord2 is a hit
+						board.put ('X', bomb_2_index.as_integer_32)
+
+						bomb2_caused_sink := check_fire_caused_sink(bomb2_hit_shipSize)
+						if bomb2_caused_sink then
+
+							-- Variable change for hit
+							-- For size > 1 Ships, it must be sunk in order to get score
+							current_score := current_score + bomb2_hit_shipSize
+							total_score_current := total_score_current + bomb2_hit_shipSize
+							current_ships := current_ships + 1
+
+						end
+
+					else								-- coord2 is not a hit
+						board.put ('O', bomb_2_index.as_integer_32)
+					end
+
+					-- Create Message
+					if (bomb1_caused_sink and bomb2_caused_sink) then
+						game_msg := bomb1_hit_shipSize.out + "x1 and "+ bomb2_hit_shipSize.out +"x1 ships sunk!"
+					elseif bomb1_caused_sink then
+						game_msg := bomb1_hit_shipSize.out + "x1 ship sunk!"
+					elseif bomb2_caused_sink then
+						game_msg := bomb2_hit_shipSize.out + "x1 ship sunk!"
+					else
+						-- sink not happened, check for hit happened.
+						if bomb1_hit_shipSize > 0 or bomb2_hit_shipSize > 0 then
+							game_msg := "Hit!"
+						else
+							game_msg := "Miss!"
+						end
+					end
+
+
+				end
+
+				-- Check for winning
+				if player_wins then
+					game_msg := game_msg + " You Win!"
+					new_game_started := false
+					game_finished := true
+				elseif player_loses then
+					game_msg := game_msg + " Game Over!"
+					new_game_started := false
+					game_finished := true
+				else
+					game_msg := game_msg + " Keep Firing!"
+				end
+
+				current_bomb := current_bomb + 1
+
+
+			end
 
 		end
 
