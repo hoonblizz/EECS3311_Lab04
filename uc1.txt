@@ -1,2 +1,6 @@
 -- Battleship acceptance test: uc1.txt
-debug_test(advanced)
+debug_test(easy)
+fire([B,4])
+fire([C,4])
+fire([C,3])
+debug_test(medium)

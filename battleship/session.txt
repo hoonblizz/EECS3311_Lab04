@@ -1,1 +1,7 @@
-debug_test(advanced)
+debug_test(easy)
+fire([B,4])
+fire([C,4])
+fire([C,3])
+debug_test(medium)
+fire([A,2])
+fire([E,4])

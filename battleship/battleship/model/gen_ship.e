@@ -76,6 +76,7 @@ feature -- utilities
 				d := (gen.direction \\ 2 = 1)
 				if d then
 					c := (gen.column \\ board_size) + 1
+					
 					r := (gen.row \\ (board_size - size)) + 1
 				else
 					r := (gen.row \\ board_size) + 1
