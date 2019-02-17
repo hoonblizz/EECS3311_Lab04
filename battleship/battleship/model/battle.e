@@ -44,14 +44,14 @@ feature {NONE} -- Initialization
 		end
 
 	-- Reset variables for new_game and debug_test
+	-- If it's switching between new_game and debug_test, variables will be reset
+	--	so, 'debugMode' (argument) is compared with 'debug_mode'
 	reset(debugMode: BOOLEAN; level: INTEGER_64)
 		do
 			-- reset all variables
 			game_finished := false
 			new_game_started := true
-			debug_mode := debugMode
 			current_difficulty := level
-			current_game := current_game + 1 -- new(next) game
 
 			cmd_status_msg := "OK"
 			game_msg := "Fire Away!"
@@ -82,6 +82,17 @@ feature {NONE} -- Initialization
 				current_board_size := advanced_board_size
 			end
 
+			-- Variables to reset if mode is switching
+			if not (debugMode ~ debug_mode) then
+				current_game := 1
+				total_score_limit := current_score_limit
+				total_score_current := 0
+			else
+				current_game := current_game + 1 -- new(next) game
+				total_score_limit := total_score_limit + current_score_limit
+			end
+			debug_mode := debugMode
+
 			-- clear board
 			create board.make_filled('_', 1, current_board_size * current_board_size)
 
@@ -89,16 +100,15 @@ feature {NONE} -- Initialization
 			-- if direction is true, vertical
 			generated_ships := gen_ship.generate_ships (debug_mode, current_board_size, current_ships_limit)
 			generated_ships_index.wipe_out
-			test_ships_generated
+			--test_ships_generated
 
-			-- Before reset variables, stack scores to total score
-			total_score_limit := total_score_limit + current_score_limit
-			total_score_current := total_score_current + current_score
 
 			current_fire := 0
 			current_bomb := 0
 			current_score := 0
 			current_ships := 0
+
+
 
 		end
 
@@ -270,7 +280,7 @@ feature
 	display_command_status(stateNum: INTEGER): STRING
 		do
 			create Result.make_empty
-			Result.append ("  " + "state " + stateNum.out + " " + cmd_status_msg + " => " + game_msg + "%N")
+			Result.append ("  " + "state " + stateNum.out + " " + cmd_status_msg + " -> " + game_msg)
 		end
 
 	-- board display.
@@ -293,7 +303,18 @@ feature
 						else
 							Result.append(j.out) -- display numbers
 						end
-						Result.append("  ") -- give space between col
+
+						-- Avoid the last one has spaces
+						-- AND when number is greater than 10, use single space. Not double.
+						if j < current_board_size then
+							if j < 9 then
+								Result.append("  ") -- give space between col
+							else
+								Result.append(" ")
+							end
+
+						end
+
 						j := j + 1
 					end
 				else					-- rest of board
@@ -308,7 +329,11 @@ feature
 							board_index := (current_board_size * (i - 1)) + j
 							Result.append(board[board_index].out)
 						end
-						Result.append("  ")
+
+						if j < current_board_size then	-- Avoid the last one has spaces
+							Result.append("  ") -- give space between col	
+						end
+
 						j := j + 1
 					end
 				end
@@ -323,9 +348,8 @@ feature
 	-- Current game, number of shots, bombs, counted score and ships
 	display_game_status: STRING
 		local
-			tempRow: DOUBLE
-			tempCol: INTEGER
-			i, posLimit: INTEGER
+
+			i, j, posLimit: INTEGER
 			tempTuple: TUPLE[row: INTEGER; col: INTEGER]
 		do
 			create Result.make_empty
@@ -333,19 +357,22 @@ feature
 			-- Current game
 			Result.append ("  " + "Current Game")
 			if debug_mode then Result.append (" (debug)") end
-			Result.append (":" + current_game.out + "%N")
+			Result.append (": " + current_game.out + "%N")
 
 			-- Shots(fire), Bombs, Score, Ships
 			Result.append ("  " + "Shots: " + current_fire.out + "/" + current_fire_limit.out + "%N")
 			Result.append ("  " + "Bombs: " + current_bomb.out + "/" + current_bomb_limit.out + "%N")
 			Result.append ("  " + "Score: " + current_score.out + "/" + current_score_limit.out)
-			Result.append (" (" + total_score_current.out + "/" + total_score_limit.out + ")%N")
+			Result.append (" (Total: " + total_score_current.out + "/" + total_score_limit.out + ")%N")
 			Result.append ("  " + "Ships: " + current_ships.out + "/" + current_ships_limit.out + "%N")
 
 			-- Display status of ships
+			j := 0
 			across
 				generated_ships_index as ships
 			loop
+
+				j := j + 1  -- count for NOT having space at the end.
 
 				Result.append("  " + "  " + ships.item.size.out + "x1: ")
 
@@ -359,7 +386,11 @@ feature
 						-- get row, col from index
 						tempTuple := convert_index_to_coord(index.item, current_board_size)
 
-						Result.append("[" + row_chars[tempTuple.row].out + ", " + tempTuple.col.out + "]->")
+						-- Notice that if col is greater than 10, use NO space
+
+						Result.append("[" + row_chars[tempTuple.row].out + ",")
+						if tempTuple.col < 10 then Result.append (" ") end
+						Result.append(tempTuple.col.out + "]->")
 						Result.append(board[index.item].out) -- display whatever on board
 
 						if i < posLimit then Result.append(";") end
@@ -375,7 +406,10 @@ feature
 					end
 				end
 
-				Result.append ("%N")
+				-- Last one should not have newline
+				if j < generated_ships_index.count then
+					Result.append ("%N")
+				end
 
 
 			end
@@ -398,6 +432,7 @@ feature
 				Result.append (Current.display_command_status(stateNum))
 				-- Display board and game status only if new game  (or debug) is started.
 				if new_game_started or game_finished then
+					Result.append ("%N")	-- between commands, should be no spaces.
 					Result.append(Current.display_board_status) -- Board size is different from difficulties
 					Result.append (Current.display_game_status)
 				end
@@ -422,7 +457,8 @@ feature {NONE}
 
 	player_loses: BOOLEAN
 		do
-			Result := (player_wins ~ false) AND
+			--print("%Ncheck if player loses: " + player_wins.out + ", " + current_fire.out + " / " + current_fire_limit.out)
+			Result := (not player_wins) AND
 					(current_fire >= current_fire_limit AND current_bomb >= current_bomb_limit)
 		end
 
@@ -459,13 +495,13 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			if not game_ended then
 				-- Game not finished. Display message
 				cmd_status_msg := "Game already started"
-				game_msg := "Keep Firing!"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			else
 				reset(true, level)
 				-- If Debug mode, need to mark ship location
 				convert_shipCoord_to_index(true)
 
-				test_ships_index
+				--test_ships_index
 
 			end
 		end
@@ -477,12 +513,12 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			if not game_ended then
 				-- Game not finished. Display message
 				cmd_status_msg := "Game already started"
-				game_msg := "Keep Firing!"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			else
 				reset(false, level)
 				convert_shipCoord_to_index(false)
 
-				test_ships_index
+				--test_ships_index
 			end
 
 		end
@@ -525,21 +561,21 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 		do
 
 			fire_index := convert_coord_to_index(row.as_integer_32, col.as_integer_32, current_board_size)
-			print("%NFire to pos: " + row.out + ", " + col.out + " => index: " + fire_index.out)
+			--print("%NFire to pos: " + row.out + ", " + col.out + " => index: " + fire_index.out)
 
 			-- Check for 'Already fired'
 			-- Check for 'Game not started'
 			-- Check for 'No shots remaining'
 			-- check for 'Invalid coordinate'
-			if not (board[fire_index] ~ '_' or board[fire_index] ~ 'v' or board[fire_index] ~ 'h') then
-				cmd_status_msg := "Already fired there"
-				--game_msg := "Keep Firing!"
-			elseif not new_game_started then
+			if not new_game_started then
 				cmd_status_msg := "Game not started"
 				game_msg := "Start a new game"
+			elseif not (board[fire_index] ~ '_' or board[fire_index] ~ 'v' or board[fire_index] ~ 'h') then
+				cmd_status_msg := "Already fired there"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			elseif current_fire >= current_fire_limit then
 				cmd_status_msg := "No shots remaining"
-				--game_msg := "Keep Firing!"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			elseif (row > current_board_size or col > current_board_size) then
 				cmd_status_msg := "Invalid coordinate"
 				if not check_no_shots_fired then game_msg := "Keep Firing!" end
@@ -580,6 +616,10 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 					game_msg := "Miss!"
 				end
 
+
+				-- Variable change for Fire command in general
+				current_fire := current_fire + 1
+
 				if player_wins then
 					game_msg := game_msg + " You Win!"
 					new_game_started := false
@@ -592,8 +632,7 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 					game_msg := game_msg + " Keep Firing!"
 				end
 
-				-- Variable change for Fire command in general
-				current_fire := current_fire + 1
+
 
 			end
 
@@ -610,7 +649,7 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			bomb_1_index := convert_coord_to_index(coord1.row.as_integer_32, coord1.col.as_integer_32, current_board_size)
 			bomb_2_index := convert_coord_to_index(coord2.row.as_integer_32, coord2.col.as_integer_32, current_board_size)
 
-			print("%NBombs index: " + bomb_1_index.out + ", " + bomb_2_index.out)
+			--print("%NBombs index: " + bomb_1_index.out + ", " + bomb_2_index.out)
 
 			-- Check for 'Already fired'
 			-- Check for 'Game not started'
@@ -627,15 +666,18 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			--	one hits a ship, other missed, "Hit! Keep Firing!"
 			--	both midded
 			--		"Miss! Keep Firing!"
-			if
+			if not check_bombs_adjacent(coord1, coord2) then
+				cmd_status_msg := "Bomb coordinates must be adjacent"
+				if not check_no_shots_fired then game_msg := "Keep Firing!" end
+			elseif not new_game_started then
+				cmd_status_msg := "Game not started"
+				game_msg := "Start a new game"
+			elseif
 				not ((board[bomb_1_index] ~ '_' or board[bomb_1_index] ~ 'v' or board[bomb_1_index] ~ 'h') and
 					(board[bomb_2_index] ~ '_' or board[bomb_2_index] ~ 'v' or board[bomb_2_index] ~ 'h'))
 			then
 				cmd_status_msg := "Already fired there"
 				if not check_no_shots_fired then game_msg := "Keep Firing!" end
-			elseif not new_game_started then
-				cmd_status_msg := "Game not started"
-				game_msg := "Start a new game"
 			elseif current_bomb >= current_bomb_limit then
 				cmd_status_msg := "No bombs remaining"
 				if not check_no_shots_fired then game_msg := "Keep Firing!" end
@@ -645,11 +687,8 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 			then
 				cmd_status_msg := "Invalid coordinate"
 				if not check_no_shots_fired then game_msg := "Keep Firing!" end
-			elseif not check_bombs_adjacent(coord1, coord2) then
-				cmd_status_msg := "Bomb coordinates must be adjacent"
-				if not check_no_shots_fired then game_msg := "Keep Firing!" end
 			else
-				--print("%NBOMB!!!!")
+
 				cmd_status_msg := "OK"
 
 				bomb1_hit_shipSize := check_if_hit(bomb_1_index)
@@ -733,6 +772,8 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 
 				end
 
+				current_bomb := current_bomb + 1
+
 				-- Check for winning
 				if player_wins then
 					game_msg := game_msg + " You Win!"
@@ -746,7 +787,7 @@ feature {ETF_COMMAND} -- actual Commands are controlled here
 					game_msg := game_msg + " Keep Firing!"
 				end
 
-				current_bomb := current_bomb + 1
+
 
 
 			end

@@ -1,3 +1,4 @@
+-- user test 1
 debug_test(easy)
 fire([A,4])
 fire([B,4])
@@ -23,3 +24,4 @@ fire([D,1])
 fire([D,2])
 fire([D,3])
 fire([D,4])
+debug_test(hard)

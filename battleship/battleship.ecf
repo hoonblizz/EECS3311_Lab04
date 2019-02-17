@@ -38,7 +38,9 @@
 			<file_rule>
 				<exclude>^model/etf_$</exclude>
 			</file_rule>
-			<cluster name="etf_" location="\Users\taehoonkim\Desktop\EECS3311_SharedFolder\battleship\battleship\battleship\model\etf_\"/>
+			<file_rule>
+				<exclude>^model/etf_$</exclude>
+			</file_rule>
 		</cluster>
 		<cluster name="generated_code" location=".\generated_code\" recursive="true"/>
 		<cluster name="root" location=".\root\" recursive="true"/>

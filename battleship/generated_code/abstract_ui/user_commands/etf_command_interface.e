@@ -23,7 +23,7 @@ inherit
 feature {NONE}
 	make(an_etf_cmd_name: STRING; etf_cmd_args: TUPLE; an_etf_cmd_container: ETF_ABSTRACT_UI_INTERFACE)
 		do
-			print("%N[ETF_COMMAND_INTERFACE] make " + an_etf_cmd_name.out)
+			
 			create etf_cmd_message.make_empty
 			etf_cmd_name := an_etf_cmd_name
 			etf_cmd_container := an_etf_cmd_container

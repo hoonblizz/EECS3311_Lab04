@@ -4,20 +4,20 @@
 # files are. If nothing is added, current directory is used.
 # WARNING: While absolute paths are suported, the oracle may not play nicely
 # with them.
-root = "../tests"
+root = "../battleship/tests/acceptance"
 
 # Specify files or directories (relative to root) of the acceptance tests. 
 # NOTE: Tests can not be named test.expected.txt 
 # NOTE: To run all tests in root directory, uses [""] as the test.
 # WARNING: Does not support partial file names with wildcards ie at*.txt
-acceptance_tests = ["instructor"]
+acceptance_tests = ["student"]
 
 # acceptance_tests = ["acceptance-tests/at00.txt"
 #                     ,"acceptance-tests/at01.txt"]
 
 # Should regression testing continue on warnings? If this is set to False,
 # regression testing will exit.
-ignore_warnings = True
+ignore_warnings = False
 
 # Should the regression testing proceed with a list of expected files, or the 
 # oracle?	
@@ -25,10 +25,10 @@ ignore_warnings = True
 is_expected = True
 
 # Specify where you put the oracle.
-oracle = ""
+oracle = "../oracle.exe"
 
 # Specify the path of the executable built from your project.
-executable = "../oracle.exe"
+executable = "../battleship/EIFGENs/battleship/W_code/battleship"
 # The above is an OSX executable
 # Linux executable for students shaler be called: oracle.exe
 

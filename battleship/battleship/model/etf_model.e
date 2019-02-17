@@ -47,8 +47,6 @@ feature -- queries
 	out : STRING
 		do
 			--create Result.make_from_string ("  ")
-			--Result.append ("State " + i.out + " OK" )
-
 			Result := battle.display_game_board(i)
 
 		end

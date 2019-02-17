@@ -1,0 +1,9 @@
+-- student test 1
+debug_test(medium)
+fire([A,4])
+bomb([A,4],[B,3])
+fire([C,1])
+fire([C,5])
+debug_test(easy)
+fire([B,3])
+fire([B,5])

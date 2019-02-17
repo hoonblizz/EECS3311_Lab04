@@ -1,0 +1,11 @@
+#!/bin/bash
+
+rm battleship.exe
+rm at002_output.txt
+
+ln -s ../EIFGENs/battleship/W_code/battleship battleship.exe
+
+./battleship.exe -b ./acceptance/instructor/at002.txt at002_output.txt
+
+#vim -d at002_output.txt ./acceptance/instructor/at002.expected.txt
+diff at002_output.txt ./acceptance/instructor/at002.expected.txt

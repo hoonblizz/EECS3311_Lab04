@@ -1,0 +1,400 @@
+  state 0 OK -> Start a new game
+->debug_test(hard)
+  state 1 OK -> Fire Away!
+     1  2  3  4  5  6  7  8
+  A  _  _  _  _  _  _  _  _
+  B  _  _  _  _  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  _  _  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 0/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([B, 4])
+  state 2 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  _  _  _  _  _  _
+  B  _  _  _  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  _  _  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 1/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->bomb([B, 4],[B, 5])
+  state 3 Already fired there -> Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  _  _  _  _  _  _
+  B  _  _  _  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  _  _  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 1/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([D, 5])
+  state 4 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  _  _  _  _  _  _
+  B  _  _  _  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  _  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 2/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([D, 6])
+  state 5 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  _  _  _  _  _  _
+  B  _  _  _  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 3/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 3])
+  state 6 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  O  _  _  _  _  _
+  B  _  _  _  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 4/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([B, 3])
+  state 7 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  O  _  _  _  _  _
+  B  _  _  O  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  _  _  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 5/24
+  Bombs: 0/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->bomb([E, 1],[E, 2])
+  state 8 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  O  _  _  _  _  _
+  B  _  _  O  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 5/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([B, 3])
+  state 9 Already fired there -> Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  O  _  _  _  _  _
+  B  _  _  O  O  _  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 5/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([B, 5])
+  state 10 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  _  O  _  _  _  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 6/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 2])
+  state 11 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  _  _  _  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 7/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 3])
+  state 12 Already fired there -> Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  _  _  _  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 7/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 4])
+  state 13 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  _  _  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 8/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 5])
+  state 14 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  _  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 9/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([A, 6])
+  state 15 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  O  _  _
+  B  _  _  O  O  O  _  _  v
+  C  _  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 10/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([C, 1])
+  state 16 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  O  _  _
+  B  _  _  O  O  O  _  _  v
+  C  O  v  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 11/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->v;[D, 2]->v
+    1x1: [B, 8]->v
+->fire([C, 2])
+  state 17 OK -> Hit! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  O  _  _
+  B  _  _  O  O  O  _  _  v
+  C  O  X  _  _  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 12/24
+  Bombs: 1/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->X;[D, 2]->v
+    1x1: [B, 8]->v
+->bomb([C, 3],[C, 4])
+  state 18 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  O  _  _
+  B  _  _  O  O  O  _  _  v
+  C  O  X  O  O  _  _  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 12/24
+  Bombs: 2/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->X;[D, 2]->v
+    1x1: [B, 8]->v
+->bomb([C, 6],[C, 5])
+  state 19 OK -> Miss! Keep Firing!
+     1  2  3  4  5  6  7  8
+  A  _  O  O  O  O  O  _  _
+  B  _  _  O  O  O  _  _  v
+  C  O  X  O  O  O  O  _  _
+  D  _  v  _  _  O  O  _  v
+  E  O  O  _  _  _  _  _  v
+  F  _  _  _  _  _  v  _  v
+  G  _  h  h  h  h  v  _  v
+  H  _  _  _  _  _  v  _  v
+  Current Game (debug): 1
+  Shots: 12/24
+  Bombs: 3/5
+  Score: 0/15 (Total: 0/15)
+  Ships: 0/5
+    5x1: [D, 8]->v;[E, 8]->v;[F, 8]->v;[G, 8]->v;[H, 8]->v
+    4x1: [G, 2]->h;[G, 3]->h;[G, 4]->h;[G, 5]->h
+    3x1: [F, 6]->v;[G, 6]->v;[H, 6]->v
+    2x1: [C, 2]->X;[D, 2]->v
+    1x1: [B, 8]->v
